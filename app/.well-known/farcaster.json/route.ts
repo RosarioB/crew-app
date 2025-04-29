@@ -1,22 +1,15 @@
-export async function GET() {
-  const URL = process.env.NEXT_PUBLIC_URL;
+import { getFarcasterManifest } from "@/lib/warpcast";
+import { NextResponse } from "next/server";
 
-  return Response.json({
-    accountAssociation: {
-      header: process.env.FARCASTER_HEADER,
-      payload: process.env.FARCASTER_PAYLOAD,
-      signature: process.env.FARCASTER_SIGNATURE,
-    },
-    frame: {
-      version: process.env.NEXT_PUBLIC_VERSION,
-      name: process.env.NEXT_PUBLIC_ONCHAINKIT_PROJECT_NAME,
-      homeUrl: URL,
-      iconUrl: process.env.NEXT_PUBLIC_ICON_URL,
-      imageUrl: process.env.NEXT_PUBLIC_IMAGE_URL,
-      buttonTitle: `Launch ${process.env.NEXT_PUBLIC_ONCHAINKIT_PROJECT_NAME}`,
-      splashImageUrl: process.env.NEXT_PUBLIC_SPLASH_IMAGE_URL,
-      splashBackgroundColor: `#${process.env.NEXT_PUBLIC_SPLASH_BACKGROUND_COLOR}`,
-      webhookUrl: `${URL}/api/webhook`,
-    },
-  });
+export async function GET() {
+  try {
+    const manifest = await getFarcasterManifest();
+    return NextResponse.json(manifest);
+  } catch (error) {
+    console.error("Error generating manifest:", error);
+    return NextResponse.json(
+      { error: (error as Error).message },
+      { status: 500 }
+    );
+  }
 }

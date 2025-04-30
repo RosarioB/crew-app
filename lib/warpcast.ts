@@ -32,7 +32,7 @@ export async function getFarcasterManifest() {
       imageUrl: `${appUrl}/images/feed.png`,
       buttonTitle: `Launch App`,
       splashImageUrl: `${appUrl}/images/splash.png`,
-      splashBackgroundColor: "#FFFFFF",
+      splashBackgroundColor: "#000000",
       webhookUrl: `${appUrl}/api/webhook`,
       // Metadata https://github.com/farcasterxyz/miniapps/discussions/191
       subtitle: "Coin together", // 30 characters, no emojis or special characters, short description under app name

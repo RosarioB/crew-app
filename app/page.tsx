@@ -24,10 +24,14 @@ import { Icon } from "./components/DemoComponents";
 import { Home } from "./components/DemoComponents";
 import { Features } from "./components/DemoComponents";
 
+
+import { ChevronRight, MoreHorizontal, X } from "lucide-react"
+import Link from "next/link"
+
 export default function App() {
   const { setFrameReady, isFrameReady, context } = useMiniKit();
   const [frameAdded, setFrameAdded] = useState(false);
-  const [activeTab, setActiveTab] = useState("home");
+  //const [activeTab, setActiveTab] = useState("home");
 
   const addFrame = useAddFrame();
   const openUrl = useOpenUrl();
@@ -70,47 +74,51 @@ export default function App() {
     return null;
   }, [context, frameAdded, handleAddFrame]);
 
+  const [activeTab, setActiveTab] = useState("my-crews")
+
   return (
-    <div className="flex flex-col min-h-screen font-sans text-[var(--app-foreground)] mini-app-theme from-[var(--app-background)] to-[var(--app-gray)]">
-      <div className="w-full max-w-md mx-auto px-4 py-3">
-        <header className="flex justify-between items-center mb-3 h-11">
-          <div>
-            <div className="flex items-center space-x-2">
-              <Wallet className="z-10">
-                <ConnectWallet>
-                  <Name className="text-inherit" />
-                </ConnectWallet>
-                <WalletDropdown>
-                  <Identity className="px-4 pt-3 pb-2" hasCopyAddressOnClick>
-                    <Avatar />
-                    <Name />
-                    <Address />
-                    <EthBalance />
-                  </Identity>
-                  <WalletDropdownDisconnect />
-                </WalletDropdown>
-              </Wallet>
-            </div>
-          </div>
-          <div>{saveFrameButton}</div>
-        </header>
+    <div className="flex flex-col min-h-screen bg-white text-black items-center justify-center p-4">
+      <div className="text-center space-y-4">
+      {/* <div className="flex flex-col min-h-screen font-sans text-[var(--app-foreground)] mini-app-theme from-[var(--app-background)] to-[var(--app-gray)]">
+      <div className="w-full max-w-md mx-auto px-4 py-3"> */}
+        
 
-        <main className="flex-1">
-          {activeTab === "home" && <Home setActiveTab={setActiveTab} />}
-          {activeTab === "features" && <Features setActiveTab={setActiveTab} />}
-        </main>
-
-        <footer className="mt-2 pt-4 flex justify-center">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-[var(--ock-text-foreground-muted)] text-xs"
-            onClick={() => openUrl("https://base.org/builders/minikit")}
+        {/* Tabs */}
+        <div className="flex border-b border-[#f1f1f1]">
+          <button
+            className={`flex-1 py-3 text-sm font-medium ${activeTab === "my-crews" ? "border-b-2 border-black" : ""}`}
+            onClick={() => setActiveTab("my-crews")}
           >
-            Built on Base with MiniKit
-          </Button>
-        </footer>
+            My Crews
+          </button>
+          <button
+            className={`flex-1 py-3 text-sm font-medium ${activeTab === "explore-crews" ? "border-b-2 border-black" : ""}`}
+            onClick={() => setActiveTab("explore-crews")}
+          >
+            Explore Crews
+          </button>
+        </div>
+
+        {/* Main Content */}
+        <div className="p-6">
+          <div className="text-center space-y-2 mb-12">
+            <h2 className="text-2xl font-light text-[#252525]">Start a crew.</h2>
+            <h2 className="text-2xl font-light text-[#252525]">Coin anything.</h2>
+            <h2 className="text-2xl font-light text-[#252525]">Split everything.</h2>
+          </div>
+
+          <div className="text-sm text-[#6e6e6e] text-center mb-12">
+            <p>Publish coins on Zora with your friends and split the rewards.</p>
+          </div>
+
+          <Link href="/create-crew">
+            <button className="flex items-center justify-between w-full bg-black text-white rounded-full py-3 px-5">
+              <span className="font-medium">Start a crew</span>
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </Link>
+        </div>
       </div>
     </div>
-  );
+  )
 }

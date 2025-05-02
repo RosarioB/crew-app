@@ -1,0 +1,22 @@
+name: 'mongo-db'
+services:
+  mongo:
+    image: mongodb/mongodb-community-server:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_DATABASE: crew
+      INIT_WAIT_SEC: 3
+    ports:
+      - 27017:27017
+    hostname: mongo
+    container_name: mongo
+    networks:
+      - my-network
+        
+volumes:
+  mongo-data:
+
+networks:
+  my-network:
+    driver: bridge

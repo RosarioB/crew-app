@@ -43,3 +43,29 @@ export async function GET(
     );
   }
 } 
+
+
+// DELETE /api/crew/[id] - Delete a crew
+export async function DELETE(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    await connectToDatabase();
+    const crew = await CrewModel.findByIdAndDelete(params.id);
+
+    if (!crew) {
+      return NextResponse.json(
+        { error: "Crew not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Failed to delete crew" },
+      { status: 500 }
+    );
+  }
+}

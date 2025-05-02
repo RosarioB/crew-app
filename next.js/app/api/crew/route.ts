@@ -17,41 +17,26 @@ export async function GET(request: Request) {
   }
 }
 
-// GET /api/crew/[id] - Get a specific crew by id
-export async function GET_ID(request: Request, { params }: { params: { id: string } }) {
-  try {
-    await connectToDatabase();
-    const crew = await CrewModel.findById(params.id);
-    
-    if (!crew) {
-      return NextResponse.json(
-        { error: "Crew not found" },
-        { status: 404 }
-      );
-    }
-    
-    return NextResponse.json(crew);
-  } catch (error) {
-    console.error('Error in GET /api/crew/[id]:', error);
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Failed to fetch crew" },
-      { status: 500 }
-    );
-  }
-}
-
 // POST /api/crew - Create a new crew
 export async function POST(request: Request) {
   try {
     await connectToDatabase();
-    const body = await request.json();
-    const { name, description, image, members, splitAddress } = body;
+    const formData = await request.formData();
+    
+    const name = formData.get('name') as string;
+    const description = formData.get('description') as string;
+    const members = JSON.parse(formData.get('members') as string);
+    const splitAddress = formData.get('splitAddress') as string;
+    const image = formData.get('image') as File | null;
 
     // Create crew object
     const crew = new CrewModel({
       name,
       description,
-      image,
+      image: image ? {
+        data: Buffer.from(await image.arrayBuffer()),
+        contentType: image.type
+      } : null,
       members,
       splitAddress,
     });
@@ -62,47 +47,10 @@ export async function POST(request: Request) {
     return NextResponse.json(crew, { status: 201 });
   } catch (error) {
     console.error('Error in POST /api/crew:', error);
-    if (error instanceof Error && error.message === 'Member percentages must sum to 100') {
-      return NextResponse.json(
-        { error: error.message },
-        { status: 400 }
-      );
-    }
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Failed to create crew" },
       { status: 500 }
     );
   }
 }
-
-// DELETE /api/crew - Delete a crew
-export async function DELETE(request: Request) {
-  try {
-    await connectToDatabase();
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
-
-    if (!id) {
-      return NextResponse.json(
-        { error: "Crew ID is required" },
-        { status: 400 }
-      );
-    }
-
-    const crew = await CrewModel.findByIdAndDelete(id);
-
-    if (!crew) {
-      return NextResponse.json(
-        { error: "Crew not found" },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Failed to delete crew" },
-      { status: 500 }
-    );
-  }
-} 
+ 

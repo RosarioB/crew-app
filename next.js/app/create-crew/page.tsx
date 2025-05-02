@@ -1,9 +1,10 @@
 "use client";
 
-import { createSplitContract } from "@/lib/splits";
 import { ChevronLeft, MoreHorizontal, Plus } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { saveCrew } from "@/lib/crewService";
+import { createSplitContract } from "@/lib/splits";
 import { account } from "@/lib/viem";
 
 export default function CreateCrew() {
@@ -22,24 +23,6 @@ export default function CreateCrew() {
     }
   };
 
-  const createFormData = (
-    crewName: string,
-    crewBio: string,
-    crewImage: File | null,
-    members: any[],
-    splitAddress: string,
-  ) => {
-    const formData = new FormData();
-    formData.append("name", crewName);
-    formData.append("description", crewBio);
-    if (crewImage) {
-      formData.append("image", crewImage);
-    }
-    formData.append("members", JSON.stringify(members));
-    formData.append("splitAddress", splitAddress);
-    return formData;
-  };
-
   const handleCreateCrew = async () => {
     try {
       setIsLoading(true);
@@ -55,33 +38,15 @@ export default function CreateCrew() {
         },
       ];
 
-      /* const { splitAddress } = await createSplitContract(
-        members,
-        1,
-        account.address,
-      ); */
+      const {splitAddress} = await createSplitContract(members, 1, account.address);
 
-      // Elimina
-      const splitAddress = "0xe9B30f1D5d664138e88BE0a60d224333a85Ca0E6";
-
-      const formData = createFormData(
-        crewName,
-        crewBio,
-        crewImage,
+      await saveCrew({
+        name: crewName,
+        description: crewBio,
+        image: crewImage,
         members,
         splitAddress,
-      );
-      
-      const response = await fetch("/api/crew", {
-        method: "POST",
-        body: formData,
       });
-
-      console.log("Response API:", response);
-
-      if (!response.ok) {
-        throw new Error("Failed to create crew");
-      }
 
       // Redirect to crew list or crew details page
     } catch (error) {

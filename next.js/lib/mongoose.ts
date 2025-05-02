@@ -6,7 +6,9 @@ if (!process.env.NEXT_PUBLIC_MONGODB_URI) {
 }
 
 const uri = process.env.NEXT_PUBLIC_MONGODB_URI;
-const options = {};
+const options = {
+   dbName: "crew"
+};
 
 let isConnected = false;
 

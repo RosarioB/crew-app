@@ -1,20 +1,20 @@
 "use client";
 
-import { getSplitBalance } from "@/lib/splits";
+import { distributeAndWithdrawForAll, getSplitBalance } from "@/lib/splits";
 import { Crew } from "@/models/crew";
 import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { Coin } from "@/models/coin";
+import { formatAddress } from "@/lib/utils";
 
 export default function CrewProfile() {
   const pathname = usePathname();
   const splitAddress = pathname.split("/").pop();
   const [crew, setCrew] = useState<Crew | null>(null);
-  const router = useRouter();
   const [balance, setBalance] = useState<string>("0");
   const [coins, setCoins] = useState<Coin[]>([]);
 
@@ -67,7 +67,7 @@ export default function CrewProfile() {
       <div className="w-full max-w-md p-6 flex flex-col  items-center">
         <div className="w-20 h-20 rounded-full overflow-hidden mb-3">
           <Image
-            src={crew?.image || ""}
+            src={crew?.image || "/placeholder.svg"}
             alt={crew?.name || ""}
             width={80}
             height={80}
@@ -76,12 +76,25 @@ export default function CrewProfile() {
         </div>
         <h2 className="text-lg font-medium mb-1">{crew?.name}</h2>
         <p className="text-sm text-gray-500 mb-4">{crew?.description}</p>
+        <span
+          className="text-sm text-black-500 mb-4 cursor-pointer"
+          onClick={() => navigator.clipboard.writeText(splitAddress as string)}
+        >
+          {formatAddress(splitAddress as string)}
+        </span>
 
         <div className="mb-2">
           <div className="flex justify-center items-center mb-1 gap-2">
-            <span className="text-sm font-medium">Balance {balance} ETH</span>
+            <span className="text-sm font-medium">Balance: {balance} ETH</span>
           </div>
-          <button className="w-[300px] bg-gray-200 text-gray-800 rounded-full py-1.5 text-sm font-medium flex justify-center">
+          <button
+            className="w-[300px] bg-gray-200 text-gray-800 rounded-full py-1.5 text-sm font-medium flex justify-center"
+            onClick={async () => {
+              await distributeAndWithdrawForAll(splitAddress as string);
+              const splitBalance = await getSplitBalance(splitAddress as string);
+              setBalance(splitBalance);
+            }}
+          >
             Claim
           </button>
         </div>
@@ -99,7 +112,7 @@ export default function CrewProfile() {
           >
             <div className="flex items-center gap-2">
               <div className="w-6 h-6 rounded-full bg-blue-500"></div>
-              <span className="text-sm font-medium">{member.address}</span>
+              <span className="text-sm font-medium">{`${formatAddress(member.address)}`}</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="flex -space-x-1">
@@ -114,7 +127,7 @@ export default function CrewProfile() {
           </div>
         ))}
 
-        {/* Start a crew button */}
+        {/* Create a coin button */}
         <div className="mt-6 flex justify-center">
           <Link href={`/crew/${splitAddress}/create-coin`}>
             <button className="flex items-center justify-between w-[300px] bg-black text-white rounded-full py-3 px-5">

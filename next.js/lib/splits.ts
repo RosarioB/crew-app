@@ -1,6 +1,6 @@
 import { SplitsClient } from '@0xsplits/splits-sdk';
 import { base, baseSepolia } from 'viem/chains';
-import { publicClient, walletClient } from './viem';
+import { account, publicClient, walletClient } from './viem';
 import { Recipient } from '@/models/crew';
 import { zeroAddress, formatEther } from 'viem';
 
@@ -40,12 +40,25 @@ export async function createSplitContract(recipients: Recipient[], distributorFe
 
 export async function getSplitBalance(address: string) {
     const args = {
-      splitAddress: address,
-      token: zeroAddress, //ETH
+        splitAddress: address,
+        token: zeroAddress, // ETH
     }
-  
+
     const response = await splitsClient.getSplitBalance(args);
     const balance = response.balance;
     const formattedBalance = formatEther(balance);
     return formattedBalance;
-  }
+}
+
+export async function distributeAndWithdrawForAll(address: string) {
+    const args = {
+        splitAddress: address,
+        tokens: [
+            zeroAddress, // ETH
+        ],
+        distributorAddress: account.address,
+    }
+    const response = await splitsClient.batchDistributeAndWithdrawForAll(args)
+    console.log("Response batchDistributeAndWithdrawForAll:", response);
+    return response;
+}

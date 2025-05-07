@@ -21,6 +21,7 @@ export default function CreateCoin() {
   const [coinDescription, setCoinDescription] = useState("");
   const [coinSymbol, setCoinSymbol] = useState("");
   const [crew, setCrew] = useState<Crew | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,6 +45,7 @@ export default function CreateCoin() {
 
   const handleCreateCoin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsLoading(true);
     if (!coinImage) {
       console.error("No image file provided");
       return;
@@ -95,6 +97,8 @@ export default function CreateCoin() {
       router.push(`/crew/${splitAddress}`);
     } catch (error) {
       console.error("Error creating coin:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -188,8 +192,9 @@ export default function CreateCoin() {
             <button
               className="flex items-center justify-between w-[300px] bg-black text-white rounded-full py-3 px-5"
               type="submit"
+              disabled={isLoading || !coinName || !coinDescription || !coinSymbol}
             >
-              <span className="font-medium">Create Coin</span>
+              <span className="font-medium">{isLoading ? "Creating..." : "Create Coin"}</span>
               <ChevronRight className="w-5 h-5" />
             </button>
           </div>

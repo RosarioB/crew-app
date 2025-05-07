@@ -1,14 +1,16 @@
 import { SplitsClient } from '@0xsplits/splits-sdk';
-import { base } from 'viem/chains';
+import { base, baseSepolia } from 'viem/chains';
 import { publicClient, walletClient } from './viem';
-import { Recipient } from '@/models/Crew';
+import { Recipient } from '@/models/crew';
+import { zeroAddress, formatEther } from 'viem';
+
 
 if (!process.env.NEXT_PUBLIC_SPLITS_API_KEY) {
     throw new Error('Invalid/Missing environment variable: "SPLITS_API_KEY"');
 }
 
 const splitsClient = new SplitsClient({
-    chainId: base.id,
+    chainId: baseSepolia.id, // TESTING
     publicClient,
     walletClient,
     includeEnsNames: false,
@@ -34,3 +36,16 @@ export async function createSplitContract(recipients: Recipient[], distributorFe
     console.log("Split contract created at:", response.splitAddress);
     return response;
 }
+
+
+export async function getSplitBalance(address: string) {
+    const args = {
+      splitAddress: address,
+      token: zeroAddress, //ETH
+    }
+  
+    const response = await splitsClient.getSplitBalance(args);
+    const balance = response.balance;
+    const formattedBalance = formatEther(balance);
+    return formattedBalance;
+  }

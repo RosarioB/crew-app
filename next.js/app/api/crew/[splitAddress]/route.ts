@@ -1,22 +1,22 @@
 import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongoose";
-import { CrewModel } from "@/models/Crew";
+import { CrewModel } from "@/models/crew";
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: { splitAddress: string } }
 ) {
   try {
     await connectToDatabase();
-    const crew = await CrewModel.findById(params.id);
-    
+    const crew = await CrewModel.findOne({ splitAddress: params.splitAddress });
+
     if (!crew) {
       return NextResponse.json(
         { error: "Crew not found" },
-        { 
+        {
           status: 404,
           headers: {
             'Content-Type': 'application/json',
@@ -24,17 +24,17 @@ export async function GET(
         }
       );
     }
-    
+
     return NextResponse.json(crew, {
       headers: {
         'Content-Type': 'application/json',
       }
     });
   } catch (error) {
-    console.error('Error in GET /api/crew/[id]:', error);
+    console.error('Error in GET /api/crew/[splitAddress]:', error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Failed to fetch crew" },
-      { 
+      {
         status: 500,
         headers: {
           'Content-Type': 'application/json',
@@ -42,17 +42,17 @@ export async function GET(
       }
     );
   }
-} 
+}
 
 
 // DELETE /api/crew/[id] - Delete a crew
 export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
+    request: Request,
+    { params }: { params: { splitAddress: string } }
 ) {
   try {
     await connectToDatabase();
-    const crew = await CrewModel.findByIdAndDelete(params.id);
+    const crew = await CrewModel.findOneAndDelete({ splitAddress: params.splitAddress });
 
     if (!crew) {
       return NextResponse.json(

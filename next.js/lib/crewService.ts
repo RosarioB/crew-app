@@ -1,9 +1,9 @@
-import { Recipient } from "@/models/Crew";
+import { Recipient } from "@/models/crew";
 
 export interface CreateCrewData {
   name: string;
   description: string;
-  image: File | null;
+  image: string | null;
   members: Recipient[];
   splitAddress: string;
 }
@@ -25,7 +25,7 @@ export async function saveCrew(crewData: CreateCrewData) {
     console.log("Crew Bio:", crewData.description);
     console.log("Members:", JSON.stringify(crewData.members, null, 2));
     console.log("Split Address:", crewData.splitAddress);
-    console.log("Image File:", crewData.image ? crewData.image.name : "No image");
+    console.log("Image URL:", crewData.image || "No image");
 
     // Save to API
     const response = await fetch("/api/crew", {

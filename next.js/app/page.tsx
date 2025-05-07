@@ -5,40 +5,19 @@ import {
   useAddFrame,
   useOpenUrl,
 } from "@coinbase/onchainkit/minikit";
-import {
-  Name,
-  Identity,
-  Address,
-  Avatar,
-  EthBalance,
-} from "@coinbase/onchainkit/identity";
-import {
-  ConnectWallet,
-  Wallet,
-  WalletDropdown,
-  WalletDropdownDisconnect,
-} from "@coinbase/onchainkit/wallet";
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { Button } from "./components/DemoComponents";
 import { Icon } from "./components/DemoComponents";
-import { Home } from "./components/DemoComponents";
-import { Features } from "./components/DemoComponents";
 
-import { ChevronRight, MoreHorizontal, X } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { usePrivy } from "@privy-io/react-auth";
-import { useRouter } from "next/navigation";
 
 export default function App() {
   const { setFrameReady, isFrameReady, context } = useMiniKit();
   const [frameAdded, setFrameAdded] = useState(false);
-  const router = useRouter();
-  const { ready, authenticated, user, login, logout } = usePrivy();
-  const [activeTab, setActiveTab] = useState("my-crews");
 
   const addFrame = useAddFrame();
   const openUrl = useOpenUrl();
-  
 
   useEffect(() => {
     if (!isFrameReady) {
@@ -50,12 +29,6 @@ export default function App() {
     const frameAdded = await addFrame();
     setFrameAdded(Boolean(frameAdded));
   }, [addFrame]);
-
-  /* useEffect(() => {
-    if (ready && authenticated) {
-      router.push("/crew");
-    }
-  }, [ready, authenticated, router]); */
 
   const saveFrameButton = useMemo(() => {
     if (context && !context.client.added) {
@@ -86,34 +59,24 @@ export default function App() {
 
   return (
     <div className="flex flex-col min-h-screen bg-white text-black items-center justify-center p-4">
-      {authenticated && (
-        <div className="flex justify-end">
-          <button
-            className="text-sm font-medium"
-            onClick={() => logout()}
-          >
-            Logout
-          </button>
-        </div>
-      )}
+      {/* Header */}
+      <header className="w-full max-w-md border-b border-gray-200 p-4 flex items-center justify-between">
+        <div className="flex justify-end ml-auto">{saveFrameButton}</div>
+      </header>
 
-      <div className="text-center space-y-4">
-        {/* Tabs */}
-        <div className="flex border-b border-[#f1f1f1]">
-          <button
-            className={`flex-1 py-3 text-sm font-medium ${activeTab === "my-crews" ? "border-b-2 border-black" : ""}`}
-            onClick={() => setActiveTab("my-crews")}
-          >
-            My Crews
-          </button>
-          <button
-            className={`flex-1 py-3 text-sm font-medium ${activeTab === "explore-crews" ? "border-b-2 border-black" : ""}`}
-            onClick={() => setActiveTab("explore-crews")}
-          >
-            Explore Crews
-          </button>
-        </div>
+      {/* View All Crews Link */}
+      <div className="w-full max-w-md px-6 pt-4 flex justify-between items-center">
+        <h2 className="text-sm font-medium">Recent Crews</h2>
+        <Link
+          href="/crews"
+          className="text-sm text-gray-500 flex items-center gap-1"
+        >
+          <span>View all</span>
+          <ChevronRight className="w-4 h-4" />
+        </Link>
+      </div>
 
+      <div className="flex-1 p-6 flex flex-col">
         {/* Main Content */}
         <div className="p-6">
           <div className="text-center space-y-2 mb-12">
@@ -134,27 +97,14 @@ export default function App() {
             </p>
           </div>
 
-          {ready && !authenticated && (
-            <div className="flex justify-center">
-              <button
-                className="flex items-center justify-between w-36 bg-black text-white rounded-full py-3 px-5"
-                onClick={() => login()}
-              >
-                <span className="font-medium">Login</span>
+          <div className="flex justify-center">
+            <Link href="/create-crew">
+              <button className="flex items-center justify-between w-[300px] bg-black text-white rounded-full py-3 px-5">
+                <span className="font-medium">Start a crew</span>
                 <ChevronRight className="w-5 h-5" />
               </button>
-            </div>
-          )}
-          {authenticated && (
-            <div className="flex justify-center">
-              <Link href="/create-crew">
-                <button className="flex items-center justify-between w-full bg-black text-white rounded-full py-3 px-5">
-                  <span className="font-medium">Start a crew</span>
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-              </Link>
-            </div>
-          )}
+            </Link>
+          </div>
         </div>
       </div>
     </div>

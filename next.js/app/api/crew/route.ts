@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongoose";
-import { CrewModel } from "@/models/Crew";
+import { CrewModel, Recipient } from "@/models/crew";
 
 // GET /api/crew - Get all crews
 export async function GET(request: Request) {
@@ -21,22 +21,36 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     await connectToDatabase();
-    const formData = await request.formData();
     
-    const name = formData.get('name') as string;
-    const description = formData.get('description') as string;
-    const members = JSON.parse(formData.get('members') as string);
-    const splitAddress = formData.get('splitAddress') as string;
-    const image = formData.get('image') as File | null;
+    let name: string;
+    let description: string;
+    let members: Recipient[];
+    let splitAddress: string;
+    let image: string | null = null;
+
+    const contentType = request.headers.get('content-type');
+    
+    if (contentType?.includes('multipart/form-data')) {
+      const formData = await request.formData();
+      name = formData.get('name') as string;
+      description = formData.get('description') as string;
+      members = JSON.parse(formData.get('members') as string);
+      splitAddress = formData.get('splitAddress') as string;
+      image = formData.get('image') as string | null;
+    } else {
+      const body = await request.json();
+      name = body.name;
+      description = body.description;
+      members = body.members;
+      splitAddress = body.splitAddress;
+      image = body.image;
+    }
 
     // Create crew object
     const crew = new CrewModel({
       name,
       description,
-      image: image ? {
-        data: Buffer.from(await image.arrayBuffer()),
-        contentType: image.type
-      } : null,
+      image,
       members,
       splitAddress,
     });

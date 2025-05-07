@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document, Model } from 'mongoose';
+import mongoose, { Schema, Document } from 'mongoose';
 
 export interface Recipient {
   address: string;
@@ -8,7 +8,7 @@ export interface Recipient {
 export interface Crew extends Document {
   name: string;
   description: string;
-  image: string;
+  image: string | null;
   members: Recipient[];
   splitAddress: string;
 }
@@ -17,7 +17,7 @@ const crewSchema = new Schema(
   {
     name: { type: String, required: true },
     description: { type: String, required: true },
-    image: { type: String, required: false },
+    image: { type: String },
     members: [{ address: { type: String, required: true }, percentage: { type: Number, required: true } }],
     splitAddress: { type: String, required: true },
   },

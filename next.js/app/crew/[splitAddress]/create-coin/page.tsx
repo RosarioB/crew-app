@@ -5,7 +5,6 @@ import {
   ChevronRight,
   MoreHorizontal,
   Plus,
-  Router,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -81,6 +80,9 @@ export default function CreateCoin() {
       console.log(`Coin params: ${JSON.stringify(coinParams)}`);
 
       const result = await createCoinWithRetry(coinParams, jsonHash);
+      if(!result.address) {
+        throw new Error("Failed to call Zora SDK. Please try again.");
+      }
       const zoraCoinUrl = `https://zora.co/coin/base:${result.address}`;
 
       await saveCoin({
@@ -103,9 +105,9 @@ export default function CreateCoin() {
       console.log(`Coin saved in the DB: ${coinName} with address ${result.address}`);
 
       router.push(`/crew/${splitAddress}`);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error creating coin:", error);
-      setError("Failed to create coin. Please try again.");
+      setError(error instanceof Error ? error.message : "An unknown error occurred");
     } finally {
       setIsLoading(false);
     }

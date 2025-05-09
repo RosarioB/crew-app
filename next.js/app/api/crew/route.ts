@@ -1,15 +1,17 @@
 import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongoose";
 import { CrewModel, Recipient } from "@/models/crew";
+import { logger } from "@/lib/logger";
 
 // GET /api/crew - Get all crews
-export async function GET(request: Request) {
+export async function GET() {
   try {
     await connectToDatabase();
     const crews = await CrewModel.find().sort({ createdAt: -1 });
+    logger.info(`Crews fetched: ${crews?.length}`);
     return NextResponse.json(crews);
   } catch (error) {
-    console.error('Error in GET /api/crew:', error);
+    logger.error('Error in GET /api/crew:', error as Error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Failed to fetch crews" },
       { status: 500 }
@@ -21,7 +23,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     await connectToDatabase();
-    
+
     let name: string;
     let description: string;
     let members: Recipient[];
@@ -29,7 +31,7 @@ export async function POST(request: Request) {
     let image: string | null = null;
 
     const contentType = request.headers.get('content-type');
-    
+
     if (contentType?.includes('multipart/form-data')) {
       const formData = await request.formData();
       name = formData.get('name') as string;
@@ -57,14 +59,14 @@ export async function POST(request: Request) {
 
     // Save to MongoDB
     await crew.save();
+    logger.info(`Crew created: ${crew?.name} with splitAddress ${crew?.splitAddress}`);
 
     return NextResponse.json(crew, { status: 201 });
   } catch (error) {
-    console.error('Error in POST /api/crew:', error);
+    logger.error('Error in POST /api/crew:', error as Error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Failed to create crew" },
       { status: 500 }
     );
   }
 }
- 

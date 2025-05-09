@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongoose";
 import { CoinModel } from "@/models/coin";
+import { logger } from "@/lib/logger";
 
 // GET all coins for a specific owner
 export async function GET(
@@ -13,7 +14,7 @@ export async function GET(
 
     return NextResponse.json(coins);
   } catch (error) {
-    console.error("Error fetching coins for owner:", error);
+    logger.error("Error fetching coins for owner:", error as Error);
     return NextResponse.json(
       { error: "Failed to fetch coins for owner" },
       { status: 500 }

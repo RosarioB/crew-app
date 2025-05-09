@@ -1,15 +1,17 @@
 import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongoose";
 import { CoinModel } from "@/models/coin";
+import { logger } from "@/lib/logger";
 
 // GET all coins
 export async function GET() {
   try {
     await connectToDatabase();
     const coins = await CoinModel.find().sort({ createdAt: -1 });
+    logger.info(`Coins fetched: ${coins?.length}`);
     return NextResponse.json(coins);
   } catch (error) {
-    console.error("Error fetching coins:", error);
+    logger.error("Error fetching coins:", error as Error);
     return NextResponse.json({ error: "Failed to fetch coins" }, { status: 500 });
   }
 }
@@ -89,10 +91,10 @@ export async function POST(request: Request) {
 
     // Save to MongoDB
     await coin.save();
-
+    logger.info(`Coin created: ${coin.name} with address ${coin.address}`);
     return NextResponse.json(coin, { status: 201 });
   } catch (error) {
-    console.error("Error creating coin:", error);
+    logger.error("Error creating coin:", error as Error);
     return NextResponse.json({ error: "Failed to create coin" }, { status: 500 });
   }
 } 

@@ -1,6 +1,12 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, MoreHorizontal, Plus, Router } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  MoreHorizontal,
+  Plus,
+  Router,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -22,6 +28,7 @@ export default function CreateCoin() {
   const [coinSymbol, setCoinSymbol] = useState("");
   const [crew, setCrew] = useState<Crew | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,23 +53,22 @@ export default function CreateCoin() {
   const handleCreateCoin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    if (!coinImage) {
-      console.error("No image file provided");
-      return;
-    }
-    const imageHash = await uploadImageToPinata(coinImage);
-    const jsonHash = await uploadJsonToPinata(
-      coinName,
-      coinDescription,
-      imageHash,
-    );
-
-    /* const imageHash = "bafybeifwevrhhi4n7rxr3oz7mvne67amw5a6trhhozibvmr7tu4lcgqygm";
-    const jsonHash = "bafkreidn46m7tnqnqwam2qwtphr6j2ynsneikn4sow5rk3rbrx3fzhyu2y"; */
-    const imageUrl = `https://${process.env.NEXT_PUBLIC_PINATA_GATEWAY_URL}/ipfs/${imageHash}`;
-    const jsonUrl = `ipfs://${jsonHash}`;
-
+    setError(null);
     try {
+      if (!coinImage) {
+        setError("No image file provided");
+        throw new Error("No image file provided");
+      }
+      const imageHash = await uploadImageToPinata(coinImage);
+      const jsonHash = await uploadJsonToPinata(
+        coinName,
+        coinDescription,
+        imageHash,
+      );
+
+      const imageUrl = `https://${process.env.NEXT_PUBLIC_PINATA_GATEWAY_URL}/ipfs/${imageHash}`;
+      const jsonUrl = `ipfs://${jsonHash}`;
+
       const coinParams: CreateCoinArgs = {
         name: coinName,
         symbol: coinSymbol,
@@ -94,9 +100,12 @@ export default function CreateCoin() {
         txHash: result.hash,
       });
 
+      console.log(`Coin saved in the DB: ${coinName} with address ${result.address}`);
+
       router.push(`/crew/${splitAddress}`);
     } catch (error) {
       console.error("Error creating coin:", error);
+      setError("Failed to create coin. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -181,20 +190,36 @@ export default function CreateCoin() {
               <h3 className="text-sm font-medium mb-1">Symbol</h3>
               <input
                 type="text"
-                placeholder="Enter coin symbol"
+                placeholder="Enter coin symbol (max 5 letters)"
                 className="w-full border border-gray-300 rounded-md py-2 px-3 text-sm mb-4"
                 value={coinSymbol}
-                onChange={(e) => setCoinSymbol(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value.toUpperCase();
+                  if (/^[A-Z]{0,5}$/.test(value)) {
+                    setCoinSymbol(value);
+                  }
+                }}
+                maxLength={5}
               />
             </div>
           </div>
+          {/* Error message */}
+          {error && (
+            <div className="w-full max-w-md mb-4 rounded-md text-red-600 text-sm">
+              {error}
+            </div>
+          )}
           <div className="flex justify-center">
             <button
               className="flex items-center justify-between w-[300px] bg-black text-white rounded-full py-3 px-5"
               type="submit"
-              disabled={isLoading || !coinName || !coinDescription || !coinSymbol}
+              disabled={
+                isLoading || !coinName || !coinDescription || !coinSymbol
+              }
             >
-              <span className="font-medium">{isLoading ? "Creating..." : "Create Coin"}</span>
+              <span className="font-medium">
+                {isLoading ? "Creating..." : "Create Coin"}
+              </span>
               <ChevronRight className="w-5 h-5" />
             </button>
           </div>

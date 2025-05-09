@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongoose";
 import { CrewModel } from "@/models/crew";
+import { logger } from "@/lib/logger";
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -24,6 +25,7 @@ export async function GET(
         }
       );
     }
+    logger.info(`Crew fetched: ${crew?.name}`);
 
     return NextResponse.json(crew, {
       headers: {
@@ -31,7 +33,7 @@ export async function GET(
       }
     });
   } catch (error) {
-    console.error('Error in GET /api/crew/[splitAddress]:', error);
+    logger.error('Error in GET /api/crew/[splitAddress]:', error as Error );
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Failed to fetch crew" },
       {
@@ -60,6 +62,7 @@ export async function DELETE(
         { status: 404 }
       );
     }
+    logger.info(`Crew deleted: ${crew?.name}`);
 
     return NextResponse.json({ success: true });
   } catch (error) {

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongoose";
 import { CoinModel } from "@/models/coin";
+import { logger } from "@/lib/logger";
 
 // GET coin by address
 export async function GET(
@@ -29,7 +30,7 @@ export async function GET(
       }
     });
   } catch (error) {
-    console.error('Error in GET /api/coin/[address]:', error);
+    logger.error('Error in GET /api/coin/[address]:', error as Error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Failed to fetch coin" },
       {

@@ -115,6 +115,8 @@ export default function CreateCrew() {
         splitAddress,
       });
 
+      console.log(`Crew saved in the DB: ${crewName} with splitAddress ${splitAddress}`);
+
       router.push(`/crew/${splitAddress}`);
     } catch (error) {
       console.error("Error creating crew:", error);

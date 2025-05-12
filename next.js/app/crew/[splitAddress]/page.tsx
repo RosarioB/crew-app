@@ -69,9 +69,12 @@ export default function CrewProfile() {
     }
   }, [readyPrivy, authenticated, readyWallets, wallets, crew]);
 
-  
-  console.log(wallets);
-  console.log(isAllowed);
+  console.log("readyPrivy", readyPrivy);
+  console.log("authenticated", authenticated);
+  console.log("readyWallets", readyWallets);
+  console.log("wallets", wallets);
+  console.log("isAllowed", isAllowed);
+  console.log("crew", crew);
 
   return (
     <div className="flex flex-col min-h-screen bg-white text-black items-center p-4">

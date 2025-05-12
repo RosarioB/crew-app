@@ -60,6 +60,7 @@ export default function CrewProfile() {
     if (readyPrivy && authenticated && readyWallets && crew) {
       const crewMembers = crew.members.map((member) => member.address.toLowerCase());
       const wallet = wallets.find((wallet) => wallet.linked);
+      console.log("My MetaMask wallet is", wallet);
       if (crewMembers.includes(wallet?.address.toLowerCase() || "")) {
         setIsAllowed(true);
       } else {

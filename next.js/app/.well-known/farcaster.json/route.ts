@@ -11,11 +11,11 @@ export async function GET() {
     },
     frame: {
       version: "next",
-      name: "Crew App",
+      name: "Crews",
       homeUrl: URL,
       iconUrl: `${URL}/images/icon.png`,
       imageUrl: `${URL}/images/feed.png`,
-      buttonTitle: `Launch Crew App`,
+      buttonTitle: `Launch Crews`,
       splashImageUrl: `${URL}/images/splash.png`,
       splashBackgroundColor: "#FFFFFF",
       webhookUrl: `${URL}/api/webhook`,

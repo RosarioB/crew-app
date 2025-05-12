@@ -49,8 +49,6 @@ export default function CreateCrew() {
         })),
       );
   
-      //console.log("validAddresses", validAddresses);
-  
       // Check that the sum of percentages is 100
       if (
         validAddresses.reduce((sum, member) => sum + member.percentage, 0) !==
@@ -71,8 +69,6 @@ export default function CreateCrew() {
       throw error;
     }
   };
-
-  //console.log(members);
 
   const handleCreateCrew = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

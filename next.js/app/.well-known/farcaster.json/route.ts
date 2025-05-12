@@ -17,7 +17,7 @@ export async function GET() {
       imageUrl: `${URL}/images/feed.png`,
       buttonTitle: `Launch Crew App`,
       splashImageUrl: `${URL}/images/splash.png`,
-      splashBackgroundColor: "#000000",
+      splashBackgroundColor: "#FFFFFF",
       webhookUrl: `${URL}/api/webhook`,
     },
   });

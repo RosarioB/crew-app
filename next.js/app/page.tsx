@@ -8,14 +8,14 @@ import {
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { Button } from "./components/DemoComponents";
 import { Icon } from "./components/DemoComponents";
-
+import { usePrivy } from "@privy-io/react-auth";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 
 export default function App() {
   const { setFrameReady, isFrameReady, context } = useMiniKit();
   const [frameAdded, setFrameAdded] = useState(false);
-
+  const { ready, authenticated, user, login, logout } = usePrivy();
   const addFrame = useAddFrame();
   const openUrl = useOpenUrl();
 
@@ -61,6 +61,16 @@ export default function App() {
     <div className="flex flex-col min-h-screen bg-white text-black items-center justify-center p-4">
       {/* Header */}
       <header className="w-full max-w-md border-b border-gray-200 p-4 flex items-center justify-between">
+      {authenticated && (
+        <div className="flex justify-start">
+          <button
+            className="text-sm font-medium text-blue-500"
+            onClick={() => logout()}
+          >
+            Logout
+          </button>
+        </div>
+      )}
         <div className="flex justify-end ml-auto">{saveFrameButton}</div>
       </header>
 
@@ -98,12 +108,23 @@ export default function App() {
           </div>
 
           <div className="flex justify-center">
+          {ready && !authenticated && (
+              <button
+                className="flex items-center justify-between w-[300px] bg-black text-white rounded-full py-3 px-5"
+                onClick={() => login()}
+              >
+                <span className="font-medium">Login</span>
+                <ChevronRight className="w-5 h-5" />
+              </button>
+          )}
+          {authenticated && (
             <Link href="/create-crew">
               <button className="flex items-center justify-between w-[300px] bg-black text-white rounded-full py-3 px-5">
                 <span className="font-medium">Start a crew</span>
                 <ChevronRight className="w-5 h-5" />
               </button>
             </Link>
+          )}
           </div>
         </div>
       </div>

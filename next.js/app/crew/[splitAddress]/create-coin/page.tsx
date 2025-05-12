@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  ChevronLeft,
-  ChevronRight,
-  MoreHorizontal,
-  Plus,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, MoreHorizontal, Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -17,10 +12,15 @@ import { CreateCoinArgs } from "@zoralabs/coins-sdk";
 import { createCoinWithRetry } from "@/lib/zora";
 import { saveCoin } from "@/lib/coinService";
 import { useRouter } from "next/navigation";
+import { usePrivy, useWallets } from "@privy-io/react-auth";
 
 export default function CreateCoin() {
   const pathname = usePathname();
   const splitAddress = pathname.split("/")[2];
+
+  const { ready: readyPrivy, authenticated } = usePrivy();
+  const { wallets, ready: readyWallets } = useWallets();
+
   const [coinImage, setCoinImage] = useState<File | null>(null);
   const [coinName, setCoinName] = useState("");
   const [coinDescription, setCoinDescription] = useState("");
@@ -28,6 +28,8 @@ export default function CreateCoin() {
   const [crew, setCrew] = useState<Crew | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isAllowed, setIsAllowed] = useState<boolean>(false);
+
   const router = useRouter();
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,6 +50,17 @@ export default function CreateCoin() {
     };
     fetchCrew();
   }, [splitAddress]);
+
+  useEffect(() => {
+    if (readyPrivy && authenticated && readyWallets && crew) {
+      const crewMembers = crew.members.map((member) => member.address);
+      if (crewMembers.includes(wallets[0].address)) {
+        setIsAllowed(true);
+      } else {
+        setIsAllowed(false);
+      }
+    }
+  }, [readyPrivy, authenticated, readyWallets, wallets, crew]);
 
   const handleCreateCoin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -80,7 +93,7 @@ export default function CreateCoin() {
       console.log(`Coin params: ${JSON.stringify(coinParams)}`);
 
       const result = await createCoinWithRetry(coinParams, jsonHash);
-      if(!result.address) {
+      if (!result.address) {
         throw new Error("Failed to call Zora SDK. Please try again.");
       }
       const zoraCoinUrl = `https://zora.co/coin/base:${result.address}`;
@@ -102,19 +115,23 @@ export default function CreateCoin() {
         txHash: result.hash,
       });
 
-      console.log(`Coin saved in the DB: ${coinName} with address ${result.address}`);
+      console.log(
+        `Coin saved in the DB: ${coinName} with address ${result.address}`,
+      );
 
       router.push(`/crew/${splitAddress}`);
     } catch (error: unknown) {
       console.error("Error creating coin:", error);
-      setError(error instanceof Error ? error.message : "An unknown error occurred");
+      setError(
+        error instanceof Error ? error.message : "An unknown error occurred",
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-white text-black items-center justify-center p-4">
+    <div className="flex flex-col min-h-screen bg-white text-black items-center p-4">
       {/* Header */}
       <header className="w-full max-w-md border-b border-gray-200 p-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -126,107 +143,131 @@ export default function CreateCoin() {
         <MoreHorizontal className="w-5 h-5 text-gray-400" />
       </header>
 
-      {/* Main Content */}
-      <div className="w-full max-w-md flex-1 p-6 flex flex-col">
-        <h2 className="text-sm font-medium mb-6">Create a new coin</h2>
-        <form onSubmit={handleCreateCoin}>
-          <div className="flex-1">
-            <div className="flex justify-center mb-6">
-              <label className="cursor-pointer">
-                <div className="w-48 h-48 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
-                  {coinImage ? (
-                    <img
-                      src={URL.createObjectURL(coinImage)}
-                      alt="Crew"
-                      className="w-full h-full object-cover"
+      {readyPrivy && !authenticated && (
+        <div className="flex flex-col bg-white text-black items-center justify-center p-4">
+          <p className="text-lg font-medium">Please login to view this page</p>
+          <Link href="/" className="text-blue-500 hover:underline mt-2">
+            Go back home
+          </Link>
+        </div>
+      )}
+
+      {readyPrivy && authenticated && !isAllowed && (
+        <div className="flex flex-col bg-white text-black items-center justify-center p-4">
+          <p className="text-lg font-medium">
+            You are not allowed to view this page
+          </p>
+          <Link href="/" className="text-blue-500 hover:underline mt-2">
+            Go back home
+          </Link>
+        </div>
+      )}
+
+      {readyPrivy && authenticated && isAllowed && (
+        <>
+          {/* Main Content */}
+          <div className="w-full max-w-md flex-1 p-6 flex flex-col">
+            <h2 className="text-sm font-medium mb-6">Create a new coin</h2>
+            <form onSubmit={handleCreateCoin}>
+              <div className="flex-1">
+                <div className="flex justify-center mb-6">
+                  <label className="cursor-pointer">
+                    <div className="w-48 h-48 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
+                      {coinImage ? (
+                        <img
+                          src={URL.createObjectURL(coinImage)}
+                          alt="Crew"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <Plus className="w-12 h-12 text-gray-400" />
+                      )}
+                    </div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleImageUpload}
                     />
-                  ) : (
-                    <Plus className="w-12 h-12 text-gray-400" />
-                  )}
+                  </label>
                 </div>
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleImageUpload}
-                />
-              </label>
-            </div>
 
-            <div className="mt-auto mb-6 flex items-center gap-2">
-              <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center">
-                {crew?.image ? (
-                  <Image
-                    src={crew.image}
-                    alt={crew.name}
-                    width={40}
-                    height={40}
-                    className="w-full h-full object-cover"
+                <div className="mt-auto mb-6 flex items-center gap-2">
+                  <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center">
+                    {crew?.image ? (
+                      <Image
+                        src={crew.image}
+                        alt={crew.name}
+                        width={40}
+                        height={40}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 bg-gray-200 rounded-full" />
+                    )}
+                  </div>
+                  <span className="text-xs font-medium self-center">
+                    {crew?.name}
+                  </span>
+                </div>
+
+                <div className="mb-6">
+                  <h3 className="text-sm font-medium mb-1">Name</h3>
+                  <input
+                    type="text"
+                    placeholder="Enter coin name"
+                    className="w-full border border-gray-300 rounded-md py-2 px-3 text-sm mb-4"
+                    value={coinName}
+                    onChange={(e) => setCoinName(e.target.value)}
                   />
-                ) : (
-                  <div className="w-10 h-10 bg-gray-200 rounded-full" />
-                )}
+                  <h3 className="text-sm font-medium mb-1">Description</h3>
+                  <input
+                    type="text"
+                    placeholder="Enter coin description"
+                    className="w-full border border-gray-300 rounded-md py-2 px-3 text-sm mb-4"
+                    value={coinDescription}
+                    onChange={(e) => setCoinDescription(e.target.value)}
+                  />
+                  <h3 className="text-sm font-medium mb-1">Symbol</h3>
+                  <input
+                    type="text"
+                    placeholder="Enter coin symbol (max 5 letters)"
+                    className="w-full border border-gray-300 rounded-md py-2 px-3 text-sm mb-4"
+                    value={coinSymbol}
+                    onChange={(e) => {
+                      const value = e.target.value.toUpperCase();
+                      if (/^[A-Z]{0,5}$/.test(value)) {
+                        setCoinSymbol(value);
+                      }
+                    }}
+                    maxLength={5}
+                  />
+                </div>
               </div>
-              <span className="text-xs font-medium self-center">
-                {crew?.name}
-              </span>
-            </div>
-
-            <div className="mb-6">
-              <h3 className="text-sm font-medium mb-1">Name</h3>
-              <input
-                type="text"
-                placeholder="Enter coin name"
-                className="w-full border border-gray-300 rounded-md py-2 px-3 text-sm mb-4"
-                value={coinName}
-                onChange={(e) => setCoinName(e.target.value)}
-              />
-              <h3 className="text-sm font-medium mb-1">Description</h3>
-              <input
-                type="text"
-                placeholder="Enter coin description"
-                className="w-full border border-gray-300 rounded-md py-2 px-3 text-sm mb-4"
-                value={coinDescription}
-                onChange={(e) => setCoinDescription(e.target.value)}
-              />
-              <h3 className="text-sm font-medium mb-1">Symbol</h3>
-              <input
-                type="text"
-                placeholder="Enter coin symbol (max 5 letters)"
-                className="w-full border border-gray-300 rounded-md py-2 px-3 text-sm mb-4"
-                value={coinSymbol}
-                onChange={(e) => {
-                  const value = e.target.value.toUpperCase();
-                  if (/^[A-Z]{0,5}$/.test(value)) {
-                    setCoinSymbol(value);
+              {/* Error message */}
+              {error && (
+                <div className="w-full max-w-md mb-4 rounded-md text-red-600 text-sm">
+                  {error}
+                </div>
+              )}
+              <div className="flex justify-center">
+                <button
+                  className="flex items-center justify-between w-[300px] bg-black text-white rounded-full py-3 px-5"
+                  type="submit"
+                  disabled={
+                    isLoading || !coinName || !coinDescription || !coinSymbol
                   }
-                }}
-                maxLength={5}
-              />
-            </div>
+                >
+                  <span className="font-medium">
+                    {isLoading ? "Creating..." : "Create Coin"}
+                  </span>
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </div>
+            </form>
           </div>
-          {/* Error message */}
-          {error && (
-            <div className="w-full max-w-md mb-4 rounded-md text-red-600 text-sm">
-              {error}
-            </div>
-          )}
-          <div className="flex justify-center">
-            <button
-              className="flex items-center justify-between w-[300px] bg-black text-white rounded-full py-3 px-5"
-              type="submit"
-              disabled={
-                isLoading || !coinName || !coinDescription || !coinSymbol
-              }
-            >
-              <span className="font-medium">
-                {isLoading ? "Creating..." : "Create Coin"}
-              </span>
-              <ChevronRight className="w-5 h-5" />
-            </button>
-          </div>
-        </form>
-      </div>
+        </>
+      )}
     </div>
   );
 }

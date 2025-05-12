@@ -59,7 +59,7 @@ export default function CrewProfile() {
   useEffect(() => {
     if (readyPrivy && authenticated && readyWallets && crew) {
       const crewMembers = crew.members.map((member) => member.address.toLowerCase());
-      const wallet = wallets.find((wallet) => wallet.walletClientType === "metamask");
+      const wallet = wallets.find((wallet) => wallet.linked);
       if (crewMembers.includes(wallet?.address.toLowerCase() || "")) {
         setIsAllowed(true);
       } else {
@@ -68,11 +68,9 @@ export default function CrewProfile() {
     }
   }, [readyPrivy, authenticated, readyWallets, wallets, crew]);
 
-  console.log(readyPrivy);
-  console.log(authenticated);
-  console.log(readyWallets);
+  
   console.log(wallets);
-  console.log(crew);
+  console.log(isAllowed);
 
   return (
     <div className="flex flex-col min-h-screen bg-white text-black items-center p-4">

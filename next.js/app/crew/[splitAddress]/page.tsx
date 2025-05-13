@@ -71,7 +71,6 @@ export default function CrewProfile() {
 
   console.log("readyPrivy", readyPrivy);
   console.log("authenticated", authenticated);
-  console.log("readyWallets", readyWallets);
   console.log("wallets", wallets);
   console.log("isAllowed", isAllowed);
   console.log("crew", crew);

@@ -11,6 +11,8 @@ import { Icon } from "./components/DemoComponents";
 import { usePrivy } from "@privy-io/react-auth";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
+import { useLoginToFrame } from "@privy-io/react-auth/farcaster";
+import frameSdk, { type FrameContext } from "@farcaster/frame-sdk";
 
 export default function App() {
   const { setFrameReady, isFrameReady, context } = useMiniKit();
@@ -18,6 +20,25 @@ export default function App() {
   const { ready, authenticated, user, login, logout } = usePrivy();
   const addFrame = useAddFrame();
   const openUrl = useOpenUrl();
+  const { initLoginToFrame, loginToFrame } = useLoginToFrame();
+
+  // Login to Mini App with Privy automatically
+useEffect(() => {
+  if (ready && !authenticated) {
+    const login = async () => {
+      // Initialize a new login attempt to get a nonce for the Farcaster wallet to sign
+      const { nonce } = await initLoginToFrame();
+      // Request a signature from Warpcast
+      const result = await frameSdk.actions.signIn({ nonce: nonce });
+      // Send the received signature from Warpcast to Privy for authentication
+      await loginToFrame({
+        message: result.message,
+        signature: result.signature,
+      });
+    };
+    login();
+  }
+}, [ready, authenticated]);
 
   useEffect(() => {
     if (!isFrameReady) {

@@ -180,12 +180,7 @@ export default function CrewProfile() {
                   <div className="w-6 h-6 rounded-full bg-blue-500"></div>
                   <span className="text-sm font-medium">{`${formatAddress(member.address)}`}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="flex -space-x-1">
-                    <div className="w-4 h-4 rounded-full bg-blue-300 border border-white"></div>
-                    <div className="w-4 h-4 rounded-full bg-green-300 border border-white"></div>
-                    <div className="w-4 h-4 rounded-full bg-purple-300 border border-white"></div>
-                  </div>
+                <div className="flex items-center">
                   <span className="text-xs text-gray-500">
                     {member.percentage}%
                   </span>

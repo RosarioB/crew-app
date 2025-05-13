@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { Coin } from "@/models/coin";
 import { formatAddress } from "@/lib/utils";
-import { usePrivy, useWallets } from "@privy-io/react-auth";
+import { usePrivy, useWallets, ConnectedWallet } from "@privy-io/react-auth";
 
 export default function CrewProfile() {
   const pathname = usePathname();

@@ -12,7 +12,7 @@ import { CreateCoinArgs } from "@zoralabs/coins-sdk";
 import { createCoinWithRetry } from "@/lib/zora";
 import { saveCoin } from "@/lib/coinService";
 import { useRouter } from "next/navigation";
-import { usePrivy, useWallets } from "@privy-io/react-auth";
+import { ConnectedWallet, usePrivy, useWallets } from "@privy-io/react-auth";
 
 export default function CreateCoin() {
   const pathname = usePathname();

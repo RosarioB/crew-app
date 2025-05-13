@@ -82,7 +82,7 @@ useEffect(() => {
     <div className="flex flex-col min-h-screen bg-white text-black items-center justify-center p-4">
       {/* Header */}
       <header className="w-full max-w-md border-b border-gray-200 p-4 flex items-center justify-between">
-      {authenticated && (
+      {/* {authenticated && (
         <div className="flex justify-start">
           <button
             className="text-sm font-medium text-blue-500"
@@ -91,7 +91,7 @@ useEffect(() => {
             Logout
           </button>
         </div>
-      )}
+      )} */}
         <div className="flex justify-end ml-auto">{saveFrameButton}</div>
       </header>
 
@@ -129,7 +129,7 @@ useEffect(() => {
           </div>
 
           <div className="flex justify-center">
-          {ready && !authenticated && (
+          {/* {ready && !authenticated && (
               <button
                 className="flex items-center justify-between w-[300px] bg-black text-white rounded-full py-3 px-5"
                 onClick={() => login()}
@@ -137,8 +137,8 @@ useEffect(() => {
                 <span className="font-medium">Login</span>
                 <ChevronRight className="w-5 h-5" />
               </button>
-          )}
-          {authenticated && (
+          )} */}
+          {ready && authenticated && (
             <Link href="/create-crew">
               <button className="flex items-center justify-between w-[300px] bg-black text-white rounded-full py-3 px-5">
                 <span className="font-medium">Start a crew</span>

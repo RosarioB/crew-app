@@ -1,6 +1,7 @@
 "use client";
 
 import { Crew } from "@/models/crew";
+import { useWallets, usePrivy, ConnectedWallet } from "@privy-io/react-auth";
 import {
   ChevronLeft,
   MoreHorizontal,
@@ -16,27 +17,45 @@ export interface CrewData {
   name: string;
   description: string;
   image: string | null;
-  members: number;
+  members: string[];
   splitAddress: string;
   id: string;
 }
 
 export default function AllCrews() {
+  const { ready: readyPrivy, authenticated } = usePrivy();
+  const { wallets } = useWallets();
+  
   const [searchQuery, setSearchQuery] = useState("");
   const [crewsData, setCrewsData] = useState<CrewData[]>([]);
+  const [wallet, setWallet] = useState<ConnectedWallet | null>(null);
+
+
+  useEffect(() => {
+    if (readyPrivy && authenticated) {
+      const wallet = wallets.find((wallet) => wallet.walletClientType === "warpcast");
+      console.log("The Warpcast wallet is", wallet);
+      if(wallet) {
+        setWallet(wallet);
+      } else {
+        console.log("No wallet found");
+      }
+    }
+  }, [readyPrivy, authenticated, wallets]);
 
   useEffect(() => {
     const fetchCrews = async () => {
       try {
         const response = await fetch("/api/crew");
-        if (response.ok) {
+        if (response.ok && wallet) {
           const data = await response.json();
-          const crewsData = data.map((crew: Crew) => ({
+          const crewsData : CrewData[] = data.map((crew: Crew) => ({
             ...crew,
-            members: crew.members.length,
+            members: crew.members.map((member) => member.address),
             id: crew.splitAddress,
           }));
-          setCrewsData(crewsData);
+          const filteredCrewsData = crewsData.filter((crewData) => crewData.members.includes(wallet.address));
+          setCrewsData(filteredCrewsData);
         }
       } catch (error) {
         console.error("Error fetching crews:", error);
@@ -44,7 +63,7 @@ export default function AllCrews() {
     };
 
     fetchCrews();
-  }, []);
+  }, [wallet]);
 
   // Filter crews based on search query
   const filteredCrews = crewsData.filter(
@@ -120,21 +139,16 @@ export default function AllCrews() {
                       {crew.description}
                     </p>
                     <div className="flex items-center mt-2">
-                      <div className="flex -space-x-1 mr-2">
-                        {Array(Math.min(3, crew.members))
-                          .fill(0)
-                          .map((_, i) => (
-                            <div
-                              key={i}
-                              className={`w-5 h-5 rounded-full border border-white ${
-                                [
-                                  "bg-blue-300",
-                                  "bg-green-300",
-                                  "bg-purple-300",
-                                ][i % 3]
-                              }`}
-                            ></div>
-                          ))}
+                      <div className="flex -space-x-2 mr-2">
+                        {crew.members.map((address, index) => (
+                          <div
+                            key={address}
+                            className="w-6 h-6 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center"
+                            title={address}
+                          >
+                            <span className="text-[10px]">{index + 1}</span>
+                          </div>
+                        ))}
                       </div>
                       <span className="text-xs text-gray-500">
                         {crew.members} members

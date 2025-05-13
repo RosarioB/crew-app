@@ -38,8 +38,8 @@ export default function CreateCrew() {
 
   useEffect(() => {
     if (readyPrivy && authenticated) {
-      const wallet = wallets.find((wallet) => wallet.linked);
-      console.log("The linked wallet is", wallet);
+      const wallet = wallets.find((wallet) => wallet.walletClientType === "warpcast");
+      console.log("The Warpcast wallet is", wallet);
       if(wallet) {
         setWallet(wallet);
       } else {

@@ -48,6 +48,8 @@ export default function CreateCrew() {
     }
   }, [readyPrivy, authenticated, wallets]);
 
+  console.log("Wallets", wallets);
+
   useEffect(() => {
     if(wallet) {
       console.log("Inside useEffect")

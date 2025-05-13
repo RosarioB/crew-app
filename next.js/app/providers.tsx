@@ -27,16 +27,11 @@ export function Providers(props: { children: ReactNode }) {
       <PrivyProvider
         appId={process.env.NEXT_PUBLIC_PRIVY_APP_ID as string}
         config={{
-          loginMethods: ["wallet", "farcaster"],
           embeddedWallets: {
             createOnLogin: "off",
           },
           defaultChain: base,
           supportedChains: [base],
-          appearance: {
-            walletList: ["metamask", "coinbase_wallet"],
-            walletChainType: "ethereum-only",
-          },
         }}
       >
         <QueryClientProvider client={queryClient}>

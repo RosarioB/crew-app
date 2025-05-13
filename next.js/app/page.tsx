@@ -82,7 +82,7 @@ useEffect(() => {
     <div className="flex flex-col min-h-screen bg-white text-black items-center justify-center p-4">
       {/* Header */}
       <header className="w-full max-w-md border-b border-gray-200 p-4 flex items-center justify-between">
-      {/* {authenticated && (
+      {authenticated && (
         <div className="flex justify-start">
           <button
             className="text-sm font-medium text-blue-500"
@@ -91,7 +91,7 @@ useEffect(() => {
             Logout
           </button>
         </div>
-      )} */}
+      )}
         <div className="flex justify-end ml-auto">{saveFrameButton}</div>
       </header>
 

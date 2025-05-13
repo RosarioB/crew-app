@@ -12,7 +12,7 @@ import { usePrivy } from "@privy-io/react-auth";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useLoginToFrame } from "@privy-io/react-auth/farcaster";
-import frameSdk, { type FrameContext } from "@farcaster/frame-sdk";
+import frameSdk from "@farcaster/frame-sdk";
 
 export default function App() {
   const { setFrameReady, isFrameReady, context } = useMiniKit();

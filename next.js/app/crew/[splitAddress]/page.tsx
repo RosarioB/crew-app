@@ -22,7 +22,22 @@ export default function CrewProfile() {
   const [crew, setCrew] = useState<Crew | null>(null);
   const [balance, setBalance] = useState<string>("0");
   const [coins, setCoins] = useState<Coin[]>([]);
+  const [wallet, setWallet] = useState<ConnectedWallet | null>(null);
   const [isAllowed, setIsAllowed] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (readyPrivy && authenticated) {
+      const wallet = wallets.find(
+        (wallet) => wallet.walletClientType === "warpcast",
+      );
+      console.log("The Warpcast wallet is", wallet);
+      if (wallet) {
+        setWallet(wallet);
+      } else {
+        console.log("No wallet found");
+      }
+    }
+  }, [readyPrivy, authenticated, wallets]);
 
   useEffect(() => {
     const fetchCrew = async () => {
@@ -57,17 +72,15 @@ export default function CrewProfile() {
   }, [splitAddress]);
 
   useEffect(() => {
-    if (readyPrivy && authenticated  && crew) {
+    if (readyPrivy && authenticated && crew && wallet) {
       const crewMembers = crew.members.map((member) => member.address.toLowerCase());
-      const wallet = wallets.find((wallet) => wallet.linked);
-      console.log("The linked wallet is", wallet);
-      if (crewMembers.includes(wallet?.address.toLowerCase() || "")) {
+      if (crewMembers.includes(wallet.address.toLowerCase())) {
         setIsAllowed(true);
       } else {
         setIsAllowed(false);
       }
     }
-  }, [readyPrivy, authenticated, wallets, crew]);
+  }, [readyPrivy, authenticated, wallets, crew, wallet]);
 
   console.log("readyPrivy", readyPrivy);
   console.log("authenticated", authenticated);

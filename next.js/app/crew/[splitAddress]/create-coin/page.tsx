@@ -29,8 +29,22 @@ export default function CreateCoin() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isAllowed, setIsAllowed] = useState<boolean>(false);
+  const [wallet, setWallet] = useState<ConnectedWallet | null>(null);
 
   const router = useRouter();
+
+
+  useEffect(() => {
+    if (readyPrivy && authenticated) {
+      const wallet = wallets.find((wallet) => wallet.walletClientType === "warpcast");
+      console.log("The Warpcast wallet is", wallet);
+      if(wallet) {
+        setWallet(wallet);
+      } else {
+        console.log("No wallet found");
+      }
+    }
+  }, [readyPrivy, authenticated, wallets]);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -52,17 +66,15 @@ export default function CreateCoin() {
   }, [splitAddress]);
 
   useEffect(() => {
-    if (readyPrivy && authenticated  && crew) {
+    if (readyPrivy && authenticated && crew && wallet) {
       const crewMembers = crew.members.map((member) => member.address.toLowerCase());
-      const wallet = wallets.find((wallet) => wallet.walletClientType === "warpcast");
-      console.log("The linked wallet is", wallet);
-      if (crewMembers.includes(wallet?.address.toLowerCase() || "")) {
+      if (crewMembers.includes(wallet.address.toLowerCase())) {
         setIsAllowed(true);
       } else {
         setIsAllowed(false);
       }
     }
-  }, [readyPrivy, authenticated, wallets, crew]);
+  }, [readyPrivy, authenticated, wallets, crew, wallet]);
 
   const handleCreateCoin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

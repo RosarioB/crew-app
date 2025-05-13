@@ -1,5 +1,6 @@
 "use client";
 
+import { formatAddress } from "@/lib/utils";
 import { Crew } from "@/models/crew";
 import { useWallets, usePrivy, ConnectedWallet } from "@privy-io/react-auth";
 import {
@@ -25,17 +26,18 @@ export interface CrewData {
 export default function AllCrews() {
   const { ready: readyPrivy, authenticated } = usePrivy();
   const { wallets } = useWallets();
-  
+
   const [searchQuery, setSearchQuery] = useState("");
   const [crewsData, setCrewsData] = useState<CrewData[]>([]);
   const [wallet, setWallet] = useState<ConnectedWallet | null>(null);
 
-
   useEffect(() => {
     if (readyPrivy && authenticated) {
-      const wallet = wallets.find((wallet) => wallet.walletClientType === "warpcast");
+      const wallet = wallets.find(
+        (wallet) => wallet.walletClientType === "warpcast",
+      );
       console.log("The Warpcast wallet is", wallet);
-      if(wallet) {
+      if (wallet) {
         setWallet(wallet);
       } else {
         console.log("No wallet found");
@@ -49,12 +51,14 @@ export default function AllCrews() {
         const response = await fetch("/api/crew");
         if (response.ok && wallet) {
           const data = await response.json();
-          const crewsData : CrewData[] = data.map((crew: Crew) => ({
+          const crewsData: CrewData[] = data.map((crew: Crew) => ({
             ...crew,
             members: crew.members.map((member) => member.address),
             id: crew.splitAddress,
           }));
-          const filteredCrewsData = crewsData.filter((crewData) => crewData.members.includes(wallet.address));
+          const filteredCrewsData = crewsData.filter((crewData) =>
+            crewData.members.includes(wallet.address),
+          );
           setCrewsData(filteredCrewsData);
         }
       } catch (error) {
@@ -138,21 +142,24 @@ export default function AllCrews() {
                     <p className="text-sm text-gray-600 mt-1 line-clamp-2">
                       {crew.description}
                     </p>
-                    <div className="flex items-center mt-2">
-                      <div className="flex -space-x-2 mr-2">
-                        {crew.members.map((address, index) => (
-                          <div
-                            key={address}
-                            className="w-6 h-6 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center"
-                            title={address}
-                          >
+                    <div className="flex flex-col gap-2 mt-2">
+                      {crew.members.map((address, index) => (
+                        <div
+                          key={address}
+                          className="flex items-center gap-2"
+                          title={address}
+                        >
+                          <div className="w-6 h-6 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center">
                             <span className="text-[10px]">{index + 1}</span>
                           </div>
-                        ))}
-                      </div>
-                      <span className="text-xs text-gray-500">
-                        {crew.members} members
-                      </span>
+                          <span className="text-xs text-gray-700">
+                            {formatAddress(address)}
+                          </span>
+                        </div>
+                      ))}
+                      {/* <span className="text-xs text-gray-500 mt-1">
+                        {crew.members.length} members
+                      </span> */}
                     </div>
                   </div>
                 </div>

@@ -17,7 +17,7 @@ export default function CrewProfile() {
   const splitAddress = pathname.split("/").pop();
 
   const { ready: readyPrivy, authenticated } = usePrivy();
-  const { wallets, ready: readyWallets } = useWallets();
+  const { wallets } = useWallets();
 
   const [crew, setCrew] = useState<Crew | null>(null);
   const [balance, setBalance] = useState<string>("0");
@@ -57,17 +57,17 @@ export default function CrewProfile() {
   }, [splitAddress]);
 
   useEffect(() => {
-    if (readyPrivy && authenticated && readyWallets && crew) {
+    if (readyPrivy && authenticated  && crew) {
       const crewMembers = crew.members.map((member) => member.address.toLowerCase());
       const wallet = wallets.find((wallet) => wallet.linked);
-      console.log("My MetaMask wallet is", wallet);
+      console.log("The linked wallet is", wallet);
       if (crewMembers.includes(wallet?.address.toLowerCase() || "")) {
         setIsAllowed(true);
       } else {
         setIsAllowed(false);
       }
     }
-  }, [readyPrivy, authenticated, readyWallets, wallets, crew]);
+  }, [readyPrivy, authenticated, wallets, crew]);
 
   console.log("readyPrivy", readyPrivy);
   console.log("authenticated", authenticated);

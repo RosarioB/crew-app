@@ -19,7 +19,7 @@ export default function CreateCoin() {
   const splitAddress = pathname.split("/")[2];
 
   const { ready: readyPrivy, authenticated } = usePrivy();
-  const { wallets, ready: readyWallets } = useWallets();
+  const { wallets } = useWallets();
 
   const [coinImage, setCoinImage] = useState<File | null>(null);
   const [coinName, setCoinName] = useState("");
@@ -52,15 +52,17 @@ export default function CreateCoin() {
   }, [splitAddress]);
 
   useEffect(() => {
-    if (readyPrivy && authenticated && readyWallets && crew) {
-      const crewMembers = crew.members.map((member) => member.address);
-      if (crewMembers.includes(wallets[0].address)) {
+    if (readyPrivy && authenticated  && crew) {
+      const crewMembers = crew.members.map((member) => member.address.toLowerCase());
+      const wallet = wallets.find((wallet) => wallet.linked);
+      console.log("The linked wallet is", wallet);
+      if (crewMembers.includes(wallet?.address.toLowerCase() || "")) {
         setIsAllowed(true);
       } else {
         setIsAllowed(false);
       }
     }
-  }, [readyPrivy, authenticated, readyWallets, wallets, crew]);
+  }, [readyPrivy, authenticated, wallets, crew]);
 
   const handleCreateCoin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

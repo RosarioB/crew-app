@@ -143,8 +143,8 @@ export default function CrewProfile() {
             </div>
             <h2 className="text-lg font-medium mb-1">{crew?.name}</h2>
             <p className="text-sm text-gray-500 mb-4">{crew?.description}</p>
-            <div className="flex items-center gap-1">
-              <span className="text-sm text-black-500 mb-4">
+            <div className="flex items-center gap-1 mb-4">
+              <span className="text-sm text-black-500">
                 {formatAddress(splitAddress as string)}
               </span>
               <CopyIcon

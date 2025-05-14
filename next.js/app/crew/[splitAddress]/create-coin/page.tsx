@@ -245,16 +245,16 @@ export default function CreateCoin() {
                   <h3 className="text-sm font-medium mb-1">Symbol</h3>
                   <input
                     type="text"
-                    placeholder="Enter coin symbol (max 5 letters)"
+                    placeholder="Enter coin symbol (max 10 letters)"
                     className="w-full border border-gray-300 rounded-md py-2 px-3 text-sm mb-4"
                     value={coinSymbol}
                     onChange={(e) => {
                       const value = e.target.value.toUpperCase();
-                      if (/^[A-Z]{0,5}$/.test(value)) {
+                      if (/^[A-Z]{0,10}$/.test(value)) {
                         setCoinSymbol(value);
                       }
                     }}
-                    maxLength={5}
+                    maxLength={10}
                   />
                 </div>
               </div>

@@ -97,7 +97,7 @@ useEffect(() => {
 
       {/* View All Crews Link */}
       <div className="w-full max-w-md px-6 pt-4 flex justify-between items-center">
-        <h2 className="text-sm font-medium">Recent Crews</h2>
+        <h2 className="text-sm font-medium">My Crews</h2>
         <Link
           href="/crews"
           className="text-sm text-gray-500 flex items-center gap-1"

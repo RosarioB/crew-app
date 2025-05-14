@@ -2,7 +2,12 @@
 
 import { distributeAndWithdrawForAll, getSplitBalance } from "@/lib/splits";
 import { Crew } from "@/models/crew";
-import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  MoreHorizontal,
+  CopyIcon,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -73,7 +78,9 @@ export default function CrewProfile() {
 
   useEffect(() => {
     if (readyPrivy && authenticated && crew && wallet) {
-      const crewMembers = crew.members.map((member) => member.address.toLowerCase());
+      const crewMembers = crew.members.map((member) =>
+        member.address.toLowerCase(),
+      );
       if (crewMembers.includes(wallet.address.toLowerCase())) {
         setIsAllowed(true);
       } else {
@@ -136,14 +143,17 @@ export default function CrewProfile() {
             </div>
             <h2 className="text-lg font-medium mb-1">{crew?.name}</h2>
             <p className="text-sm text-gray-500 mb-4">{crew?.description}</p>
-            <span
-              className="text-sm text-black-500 mb-4 cursor-pointer"
-              onClick={() =>
-                navigator.clipboard.writeText(splitAddress as string)
-              }
-            >
-              {formatAddress(splitAddress as string)}
-            </span>
+            <div className="flex items-center gap-1">
+              <span className="text-sm text-black-500 mb-4">
+                {formatAddress(splitAddress as string)}
+              </span>
+              <CopyIcon
+                className="w-4 h-4 text-gray-500 cursor-pointer hover:text-gray-700"
+                onClick={() =>
+                  navigator.clipboard.writeText(splitAddress as string)
+                }
+              />
+            </div>
 
             <div className="mb-2">
               <div className="flex justify-center items-center mb-1 gap-2">

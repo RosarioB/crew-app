@@ -1,9 +1,13 @@
 # crew-app
-Crew — an application that enables friends or contributors to launch a coin together, allowing them to share earnings transparently and automatically.
-
-Here is the [demo](https://youtu.be/seFlrilQlsY) of the project.
+Crew — a Farcaster Mini App that enables friends or contributors to launch a coin together, allowing them to share earnings transparently and automatically.
 
 This project was submitted to Base Batches APAC 2025.
+
+- Here is the [demo](https://youtu.be/seFlrilQlsY) of the project.
+
+- Here is the [link](https://warpcast.com/miniapps/F7df1CsJpwxO/crews) to try it on Farcaster.
+
+
 
 ## Technological Stack
 - This is a full-stack application with a frontend and backend based on Next.js, using MongoDB as the database.

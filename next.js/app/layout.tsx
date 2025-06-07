@@ -23,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
           title: `Launch Crew`,
           action: {
             type: "launch_frame",
-            name: "Crews",
+            name: "Crew",
             url: URL,
             splashImageUrl: `${URL}/images/splash.png`,
             splashBackgroundColor: "#FFFFFF",

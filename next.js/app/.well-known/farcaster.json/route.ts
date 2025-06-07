@@ -11,7 +11,7 @@ export async function GET() {
     },
     frame: {
       version: "next",
-      name: "Crews",
+      name: "Crew",
       homeUrl: URL,
       iconUrl: `${URL}/images/icon.png`,
       imageUrl: `${URL}/images/feed.png`,

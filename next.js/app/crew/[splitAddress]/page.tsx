@@ -33,9 +33,9 @@ export default function CrewProfile() {
   useEffect(() => {
     if (readyPrivy && authenticated) {
       const wallet = wallets.find(
-        (wallet) => wallet.walletClientType === "warpcast",
+        (wallet) => wallet.walletClientType === "farcaster",
       );
-      console.log("The Warpcast wallet is", wallet);
+      console.log("The Farcaster wallet is", wallet);
       if (wallet) {
         setWallet(wallet);
       } else {

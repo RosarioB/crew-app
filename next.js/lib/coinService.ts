@@ -7,9 +7,9 @@ export interface CreateCoinData {
   owner: string;
   payoutRecipient: string;
   platformReferrer: string;
-  currency: string | null;
-  pool: string | null;
-  version: string | null;
+  currency?: string;
+  pool?: string;
+  version?: string;
   zoraCoinUrl: string;
   address: string;
   txHash: string;

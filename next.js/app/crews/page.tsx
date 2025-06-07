@@ -31,9 +31,6 @@ export default function AllCrews() {
   const [crewsData, setCrewsData] = useState<CrewData[]>([]);
   const [wallet, setWallet] = useState<ConnectedWallet | null>(null);
 
-  
-  console.log("The wallets are", wallets);
-
   useEffect(() => {
     if (readyPrivy && authenticated) {
       const wallet = wallets.find(

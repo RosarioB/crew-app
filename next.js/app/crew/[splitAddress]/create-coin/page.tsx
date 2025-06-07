@@ -36,8 +36,8 @@ export default function CreateCoin() {
 
   useEffect(() => {
     if (readyPrivy && authenticated) {
-      const wallet = wallets.find((wallet) => wallet.walletClientType === "warpcast");
-      console.log("The Warpcast wallet is", wallet);
+      const wallet = wallets.find((wallet) => wallet.walletClientType === "farcaster");
+      console.log("The Farcaster wallet is", wallet);
       if(wallet) {
         setWallet(wallet);
       } else {

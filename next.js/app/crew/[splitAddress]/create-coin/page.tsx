@@ -8,11 +8,12 @@ import { useEffect, useState } from "react";
 import { Crew } from "@/models/crew";
 import { uploadImageToPinata, uploadJsonToPinata } from "@/lib/pinata";
 import { account } from "@/lib/viem";
-import { CreateCoinArgs } from "@zoralabs/coins-sdk";
+import { CreateCoinArgs, DeployCurrency } from "@zoralabs/coins-sdk";
 import { createCoinWithRetry } from "@/lib/zora";
 import { saveCoin } from "@/lib/coinService";
 import { useRouter } from "next/navigation";
 import { ConnectedWallet, usePrivy, useWallets } from "@privy-io/react-auth";
+import { base } from "viem/chains";
 
 export default function CreateCoin() {
   const pathname = usePathname();
@@ -102,6 +103,8 @@ export default function CreateCoin() {
         payoutRecipient: splitAddress as `0x${string}`,
         platformReferrer: account.address,
         owners: [splitAddress as `0x${string}`],
+        chainId: base.id,
+        currency: DeployCurrency.ETH,
       };
 
       console.log(`Coin params: ${JSON.stringify(coinParams)}`);
